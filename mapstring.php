@@ -91,37 +91,37 @@ echo '</pre>';
  * Ejemplo :
  * 
  * $raw = "
-BOLETA DE HONORARIOS
-ELECTRONICA
-
-GUILLERMO ANDRES REYES VALDES
-
-N°3
-RUT: 13.238.801−6
-GIRO(S): SERVICIOS DE HEROICIDAD,
-Apolo XII 1460 Villa/Pob. Donde Mueren los Valientes , MAIPU
-TELEFONO: 7783972
-Fecha: 28 de Febrero de 2019
-Señor(es): SERVICIOS Y TECNOLOGIA LIMITADA
-Domicilio: GRAN AVENIDA JOSE MIGUEL CARRERA 5018, OF.208, SAN
-MIGUEL
-
-Rut: 77.574.330− 1
-
-Por atención profesional:
-PROGRAMACION COMPUTACIONAL
-Total Honorarios $:
-10 % Impto. Retenido:
-Total:
-
-333.333
-333.333
-33.333
-300.000
-
-Fecha / Hora Emisión: 28/02/2019 15:25
-
-1323880100003EA54C26
+ * BOLETA DE HONORARIOS
+ * ELECTRONICA
+ *
+ * GUILLERMO ANDRES REYES VALDES
+ *
+ * N°3
+ * RUT: 13.238.801−6
+ * GIRO(S): SERVICIOS DE HEROICIDAD,
+ * Apolo XII 1460 Villa/Pob. Donde Mueren los Valientes , MAIPU
+ * TELEFONO: 7783972
+ * Fecha: 28 de Febrero de 2019
+ * Señor(es): SERVICIOS Y TECNOLOGIA LIMITADA
+ * Domicilio: GRAN AVENIDA JOSE MIGUEL CARRERA 5018, OF.208, SAN MIGUEL
+ *
+ * Rut: 77.574.330− 1
+ * 
+ * Por atención profesional:
+ * PROGRAMACION COMPUTACIONAL
+ *
+ * Total Honorarios $:
+ * 10 % Impto. Retenido:
+ * Total:
+ * 
+ * 333.333
+ * 333.333
+ * 33.333
+ * 300.000
+ *
+ * Fecha / Hora Emisión: 28/02/2019 15:25
+ * 
+ * 1323880100003EA54C26
 Res. Ex. N° 83 de 30/08/2004
 Verifique este documento en www.sii.cl
 El contribuyente para el cual está destinada esta boleta, es el encargado de retener el 10%.
