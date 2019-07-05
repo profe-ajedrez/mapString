@@ -40,6 +40,7 @@ El contribuyente para el cual está destinada esta boleta, es el encargado de re
 /*
 system("pdftotext TMBCOT_ConsultaBoletaPdf.pdf a.txt", $a);
 
+
 var_dump($a);
 die;
 */
