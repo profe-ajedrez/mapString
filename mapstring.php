@@ -234,116 +234,114 @@ El contribuyente para el cual está destinada esta boleta, es el encargado de re
     
  * 
  */
-function mapString($raw, $dataMap, $ini = "inicio", $fin = "fin")
+function mapString($raw, $dataMap, $ini = "inicio", $fin = "fin", $cualIni = "cual-ini", $cualFin = "cual-fin", $whenRegExpWhichOne = 0)
 {
     $response = array();
     $response["dataMapped"] = array();
     $response["log"]        = array();
 
-    foreach ($dataMap as $dataTag => $keys) {
 
+    foreach ($dataMap as $dataTag => $keys) {
         $posIni  = -1;
         $posFin  = -1;
         $rawData = "";
+        $offset  = 0;
+        if (isRegexp($keys[ $ini ])) {
 
-        $pos = indexOf($raw, $keys[ $ini ], $offset);
+            $whenRegExpWhichOne = (array_key_exists($cualIni, $keys) ? $keys[ $cualIni ] : $whenRegExpWhichOne);
+            $matches = pregIndexOf($raw, $keys[ $ini ], $whenRegExpWhichOne);
 
-        if ($pos !== false) {
-            $posIni = $pos + strlen($keys[ $ini ]) - $offset;
-
-            $pos = indexOf($raw, $keys[ $fin ], $offset);
-
-            if ($pos !== false) {
-                $posFin = $pos - 1 -$posIni;
-
-                $rawData = substr($raw, $posIni, $posFin);
-
-                $response["dataMapped"][ $dataTag ] = trim($rawData);
-                $raw = substr($raw, $posIni + $posFin);
+            if ($matches === false) {
+                $posIni = false;
+            } else {
+                $posIni     = $matches["pos"];
+                $lengthIni  = $matches["length"];
             }
+        } else {
+            $posIni    = strpos($raw, $keys[ $ini ]);
+            $lengthIni = strlen($keys[ $ini ]);
         }
 
+        if ($posIni !== false) {
+            if (isRegexp($keys[ $fin ])) {
+                $whenRegExpWhichOne = (array_key_exists($cualFin, $keys) ? $keys[ $cualFin ] : $whenRegExpWhichOne);
+                $matches = pregIndexOf($raw, $keys[ $fin ], $whenRegExpWhichOne);
+                if ($matches === false) {
+                    $posFin = false;
+                } else {
+                    $posFin    = $matches["pos"];
+                    $lengthFin = $matches["length"];
+                }
+            } else {
+                $posFin    = strpos($raw, $keys[ $fin ]);
+                $lengthFin = strlen($keys[ $fin ]);
+            }
+
+            if ($posFin !== false) {
+                $rawData = substr($raw, $posIni + $lengthIni, $posFin - ($posIni + $lengthIni));
+                $response["dataMapped"][ $dataTag ] = trim($rawData);
+                $raw = substr($raw, $posFin);
+            }
+        }
         $response["log"][ $dataTag ] = array(
             "indiceInicial" => $posIni,
             "indiceFinal"   => $posFin,
             "rawData"       => $rawData
         );
     }
-
     return $response;
 }
 
-/**
- * indexOf
- * 
- * DEvuelve la posición de la primera ocurrencia de un substring o un patron de usqueda en una cadena.
- * Si es un string, usa strpos, si es un regexp valido, usa pregIndexOf
- *
- * @param  string  $hayStack     cadena en donde buscar
- * @param  string  $needle       subcadena a buscar o regexp
- * @param  integer $endPosition  Se almacenará en esta variable la cantidad de slashes / que deben restarse para calcular la posición final del substring
- * @return mixed   integer       si encuentra al substring o regexp, equivalente a su posición en $hayStack, false si no se encuentra.
- * 
- * Ejempo:
- *     
- * $hayStack = "Batman, Superman, Green Lantern";
- * $needle   = "green";
- * $pos = indexOf($hayStack, $needle, $offset);
- * //pos = 17, $offset = 2.
- * 
- * $hayStack = "Batman, Superman, Green Lantern";
- * $needle   = "/[e]{2}/g";
- * $pos = indexOf($hayStack, $needle, $offset); 
- * //pos = 19, $offset = 2
- */
-function indexOf($hayStack, $needle, &$endPosition)
-{
-    $function    = "strpos";
-    $endPosition = 0;
 
-    if (isRegexp($needle)) {
-        $function    = "pregIndexOf";
-        $endPosition = 2;
-    }
-
-    $pos = $function($hayStack, $needle);
-    
-    return $pos;
-}
 
 
 /**
  * pregIndexOf
- * 
+ *
  * Usa regexp para encontrar la posición de un patron de busqueda dado
  *
  * @param  string $hayStack  la cadena donde buscar el patron
  * @param  string $needle    el patron regexp  buscar
+ * @param  int    $whenRegExpWhichOne indica cual de los matches devolver. Si -1, devuelve el último.
  * @return mixed             Si se encontró el patron, se devuelve un valor integer indicando su posición en la cadena. Si no se encuentra, devuelve false.
  */
-function pregIndexOf($hayStack, $needle)
+function pregIndexOf($hayStack, $needle, $whenRegExpWhichOne = 0)
 {
-    preg_match($needle, $hayStack, $matches, PREG_OFFSET_CAPTURE);
-
-    if (is_array($matches)) {
-        if (array_key_exists(0, $matches)) {
-            if (array_key_exists(1, $matches[0])) {
-                return $matches[0][1];
+    if ($whenRegExpWhichOne != 0) {
+        preg_match_all($needle, $hayStack, $matches, PREG_OFFSET_CAPTURE);
+        if ($whenRegExpWhichOne == -1) {
+            $whenRegExpWhichOne = sizeof($matches) -1;
+        }
+        if (is_array($matches)) {
+            if (array_key_exists($whenRegExpWhichOne, $matches)) {
+                if (array_key_exists(1, $matches[$whenRegExpWhichOne])) {
+                    return array("length" => strlen($matches[$whenRegExpWhichOne][0][0]), "pos" => $matches[$whenRegExpWhichOne][0][1]);
+                }
+            }
+        }
+    } else {
+        preg_match($needle, $hayStack, $matches, PREG_OFFSET_CAPTURE);
+        if (is_array($matches)) {
+            if (array_key_exists(0, $matches)) {
+                if (array_key_exists(1, $matches[0])) {
+                    return array("length" => strlen($matches[0][0]), "pos" => $matches[0][1]);
+                }
             }
         }
     }
+
     return false;
 }
-
-
 /**
  * isRegexp
- * 
+ *
  * Comprueba si el parametro es una regexp valida
  *
  * @param  string  $string
  * @return boolean true si parámetro es una regexp valida
  */
-function isRegexp($string) {
-    return @preg_match($string, '') !== FALSE;
+function isRegexp($string)
+{
+    return !(@preg_match($string, null) === false);
 }
+
